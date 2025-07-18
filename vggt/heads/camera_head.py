@@ -87,7 +87,9 @@ class CameraHead(nn.Module):
 
         # Extract the camera tokens
         pose_tokens = tokens[:, :, 0]
+        pose_tokens = pose_tokens.to(self.token_norm.weight.dtype)
         pose_tokens = self.token_norm(pose_tokens)
+
 
         pred_pose_enc_list = self.trunk_fn(pose_tokens, num_iterations)
         return pred_pose_enc_list
