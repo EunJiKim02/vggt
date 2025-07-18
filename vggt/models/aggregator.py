@@ -237,24 +237,29 @@ class Aggregator(nn.Module):
         for _ in range(self.aa_block_num):
             for attn_type in self.aa_order:
                 if attn_type == "frame":
-                    tokens, frame_idx, frame_intermediates = self._process_frame_attention(
-                        tokens, B, S, P, C, frame_idx, pos=pos
-                    )
+                    tokens, frame_idx, frame_intermediates = self._process_frame_attention(tokens, B, S, P, C, frame_idx, pos=pos)
                 elif attn_type == "global":
-                    tokens, global_idx, global_intermediates = self._process_global_attention(
-                        tokens, B, S, P, C, global_idx, pos=pos
-                    )
+                    tokens, global_idx, global_intermediates = self._process_global_attention(tokens, B, S, P, C, global_idx, pos=pos)
                 else:
                     raise ValueError(f"Unknown attention type: {attn_type}")
-
+                
             for i in range(len(frame_intermediates)):
+                frame_inter = frame_intermediates[i].to(torch.float16)
+                global_inter = global_intermediates[i].to(torch.float16)
+                concat_inter = torch.cat([frame_inter, global_inter], dim=-1)
                 # concat frame and global intermediates, [B x S x P x 2C]
-                concat_inter = torch.cat([frame_intermediates[i], global_intermediates[i]], dim=-1)
-                output_list.append(concat_inter)
+                #concat_inter = torch.cat([frame_intermediates[i], global_intermediates[i]], dim=-1)
+                output_list.append(concat_inter.detach().cpu()) 
+                #output_list.append(concat_inter)
+                torch.cuda.empty_cache()
+                del global_inter
+                del frame_inter
+
 
         del concat_inter
         del frame_intermediates
         del global_intermediates
+        # output_list = [x.to("cuda") for x in output_list]
         return output_list, self.patch_start_idx
 
     def _process_frame_attention(self, tokens, B, S, P, C, frame_idx, pos=None):

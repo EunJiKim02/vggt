@@ -117,7 +117,7 @@ class DPTHead(nn.Module):
         aggregated_tokens_list: List[torch.Tensor],
         images: torch.Tensor,
         patch_start_idx: int,
-        frames_chunk_size: int = 8,
+        frames_chunk_size: int = 1,
     ) -> Union[torch.Tensor, Tuple[torch.Tensor, torch.Tensor]]:
         """
         Forward pass through the DPT head, supports processing by chunking frames.
@@ -210,7 +210,7 @@ class DPTHead(nn.Module):
                 x = x[:, frames_start_idx:frames_end_idx]
 
             x = x.view(B * S, -1, x.shape[-1])
-
+            x = x.to(torch.float32)
             x = self.norm(x)
 
             x = x.permute(0, 2, 1).reshape((x.shape[0], x.shape[-1], patch_h, patch_w))

@@ -76,6 +76,8 @@ def run_VGGT(model, images, dtype, resolution=518):
             images = images[None]  # add batch dimension
             aggregated_tokens_list, ps_idx = model.aggregator(images)
 
+        aggregated_tokens_list = [x.to("cuda") for x in aggregated_tokens_list]
+        
         # Predict Cameras
         pose_enc = model.camera_head(aggregated_tokens_list)[-1]
         # Extrinsic and intrinsic matrices, following OpenCV convention (camera from world)
