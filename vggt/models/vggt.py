@@ -58,6 +58,8 @@ class VGGT(nn.Module, PyTorchModelHubMixin):
 
         aggregated_tokens_list, patch_start_idx = self.aggregator(images)
 
+        aggregated_tokens_list = [x.to("cuda") for x in aggregated_tokens_list]
+
         predictions = {}
 
         with torch.cuda.amp.autocast(enabled=False):
