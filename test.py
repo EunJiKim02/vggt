@@ -31,7 +31,7 @@ from vggt.utils.helper import create_pixel_coordinate_grid, randomly_limit_trues
 from vggt.dependency.track_predict import predict_tracks
 from vggt.dependency.np_to_pycolmap import batch_np_matrix_to_pycolmap, batch_np_matrix_to_pycolmap_wo_track
 
-from script.get_depthmap_img import save_dense_depth_colormap
+# from script.get_depthmap_img import save_dense_depth_colormap
 
 
 # TODO: add support for masks
